@@ -1,4 +1,4 @@
-import '../css/style.css';
+import '../scss/style.scss';
 import axios from 'axios';
 
 // polyfilling ecmascript
@@ -103,7 +103,7 @@ const addSoundButtons = () => {
 			createAudioGraph(decodedSounds[bufferKeys[i]]);
 		};
 
-		button.innerHTML = bufferKeys[i];
+		button.append(document.createElement('div'));
 
 		document.querySelector('section#sounds').append(button);
 	}
@@ -112,16 +112,24 @@ const addSoundButtons = () => {
 const addReverbButtons = () => {
 	let bufferKeys = Object.keys(decodedReverbs);
 
-	for (let i = 0; i < bufferKeys.length; i++) {
-		let button = document.createElement('button');
+	let reverbButtons = [];
 
-		button.onclick = () => {
+	for (let i = 0; i < bufferKeys.length; i++) {
+		reverbButtons[i] = document.createElement('button');
+
+		reverbButtons[i].onclick = () => {
 			currentReverb = bufferKeys[i];
+			reverbButtons[i].style.backgroundColor = 'blue';
+			reverbButtons[i === 0 ? 1 : 0].style.backgroundColor = 'white';
 		};
 
-		button.innerHTML = bufferKeys[i];
+		reverbButtons[i].innerHTML = bufferKeys[i];
 
-		document.querySelector('section#reverbs').append(button);
+		if (bufferKeys[i] === currentReverb) {
+			reverbButtons[i].style.backgroundColor = 'blue';
+		}
+
+		document.querySelector('section#reverbs').append(reverbButtons[i]);
 	}
 };
 
