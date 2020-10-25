@@ -46,10 +46,7 @@ module.exports = env => {
 			},
 			{
 				test: /\.(jpe?g|png|gif|wav)/,
-				loader: 'file-loader',
-				options: {
-					name: '[name].[ext]'
-				}
+				loader: 'file-loader'
 			}
 			]
 		},

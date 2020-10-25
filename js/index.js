@@ -5,21 +5,23 @@ import axios from 'axios';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
-import '../sounds/kick-drum.wav';
-import '../sounds/snare-drum.wav';
-import '../sounds/hi-hat.wav';
-import '../sounds/hall-reverb.wav';
-import '../sounds/long-reverb.wav'
+import kickDrum from '../sounds/kick-drum.wav';
+import snareDrum from '../sounds/snare-drum.wav';
+import hiHat from '../sounds/hi-hat.wav';
+import tomTom from '../sounds/tom.wav';
+import hallReverb from '../sounds/hall-reverb.wav';
+import longReverb from '../sounds/long-reverb.wav';
 
 let sounds = {
-	kick: 'kick-drum.wav',
-	snare: 'snare-drum.wav',
-	hihat: 'hi-hat.wav'
+	kick: kickDrum,
+	snare: snareDrum,
+	hihat: hiHat,
+	tom: tomTom
 };
 
 let reverbs = {
-	hall: 'hall-reverb.wav',
-	long: 'long-reverb.wav'
+	hall: hallReverb,
+	long: longReverb
 };
 
 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -41,7 +43,7 @@ async function decodeSounds(soundsObject) {
 		
 	} catch(e) {
 		
-		console.log(e);
+		console.error(e);
 	}
 }
 
