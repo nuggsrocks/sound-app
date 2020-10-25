@@ -24,7 +24,8 @@ let reverbs = {
 	long: longReverb
 };
 
-let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+let audioCtx = window.AudioContext === undefined ? new window.webkitAudioContext() : new window.AudioContext();
 
 async function decodeSounds(soundsObject) {
 	try {
@@ -34,8 +35,15 @@ async function decodeSounds(soundsObject) {
 
 		for (let i = 0; i < soundKeys.length; i++) {
 			let result = await axios.get(soundsObject[soundKeys[i]], {responseType: 'arraybuffer'});
+			 
 
-			buffers[soundKeys[i]] = await audioCtx.decodeAudioData(result.data);
+			if (window.AudioContext !== undefined) {
+				buffers[soundKeys[i]] = await audioCtx.decodeAudioData(result.data);
+			} else {
+				audioCtx.decodeAudioData(result.data, buffer => {
+					buffers[soundKeys[i]] = buffer;
+				}, err => console.error(err));
+			}
 		}
 
 		return buffers;
@@ -91,7 +99,8 @@ const createAudioGraph = (audioBuffer) => {
 	bufferSource.start();
 };
 
-let decodedReverbs, decodedSounds = decodedReverbs = {}
+let decodedReverbs = {};
+let decodedSounds = {};
 
 let currentReverb = 'hall';
 
@@ -112,6 +121,7 @@ const addSoundButtons = () => {
 };
 
 const addReverbButtons = () => {
+	console.log(decodedReverbs);
 	let bufferKeys = Object.keys(decodedReverbs);
 
 	let reverbButtons = [];
@@ -135,17 +145,22 @@ const addReverbButtons = () => {
 	}
 };
 
-decodeSounds(reverbs).then(reverbBuffers => {
-	decodedReverbs = reverbBuffers;
+if (audioCtx) {
+	
+	decodeSounds(reverbs).then(reverbBuffers => {
+		decodedReverbs = reverbBuffers;
 
-	addReverbButtons();
+		addReverbButtons();
 
-	decodeSounds(sounds).then(soundBuffers => {
+		decodeSounds(sounds).then(soundBuffers => {
 
-		decodedSounds = soundBuffers;
+			decodedSounds = soundBuffers;
 
-		addSoundButtons();
+			addSoundButtons();
 
+		});
 	});
-});
+} else {
+	console.log('web api not supported');
+}
 
