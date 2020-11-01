@@ -1,4 +1,4 @@
 # sound-app
-Simple drum machine with reverb built with js
+### Simple drum machine with reverb built with js
 
-https://nuggsrocks.github.io/sound-app/
+https://secret-plains-86505.herokuapp.com/
