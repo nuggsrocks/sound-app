@@ -3,7 +3,7 @@ const app = express();
 
 const port = process.env.PORT || 8000;
 
-const host = process.env.HOST || '';
+const host = process.env.HOST || '0.0.0.0';
 
 app.use(express.static(__dirname + '/public'));
 
