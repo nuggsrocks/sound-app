@@ -50,12 +50,6 @@ function decodeSound(soundObject) {
 	
 }
 
-const setAudioType = () => {
-	let audio = document.createElement('audio');
-
-	return audio.canPlayType('audio/wav');
-};
-
 
 const createAudioGraph = (audioBuffer) => {
 	let bufferSource = audioCtx.createBufferSource();
@@ -118,31 +112,17 @@ const addButton = (sound) => {
 };
 
 if (audioCtx) {
-	let audioType;
 
-	if (setAudioType() === 'probably') {
-		audioType = 0;
-	} else {
-		audioType = 1;
+	for (let i = 0; i < Object.keys(reverbs).length; i++) {
+		let key = Object.keys(reverbs)[i];
+
+		decodeSound({name: key, file: reverbs[key], type: 'reverb'});
 	}
 
-	let reverbFiles = {};
-	let soundFiles = {};
+	for (let i = 0; i < Object.keys(sounds).length; i++) {
+		let key = Object.keys(sounds)[i];
 
-
-	Object.keys(reverbs).forEach(reverbName => reverbFiles[reverbName] = reverbs[reverbName][audioType]);
-	Object.keys(sounds).forEach(soundName => soundFiles[soundName] = sounds[soundName][audioType]);
-
-	for (let i = 0; i < Object.keys(reverbFiles).length; i++) {
-		let key = Object.keys(reverbFiles)[i];
-
-		decodeSound({name: key, file: reverbFiles[key], type: 'reverb'});
-	}
-
-	for (let i = 0; i < Object.keys(soundFiles).length; i++) {
-		let key = Object.keys(soundFiles)[i];
-
-		decodeSound({name: key, file: soundFiles[key], type: 'sound'});
+		decodeSound({name: key, file: sounds[key], type: 'sound'});
 	}
 
 
