@@ -4,4 +4,4 @@ public/
 
 .env*
 
-ecosystem.config.js
+.idea/

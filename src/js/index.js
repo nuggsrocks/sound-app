@@ -1,49 +1,33 @@
 import '../scss/style.scss';
 import axios from 'axios';
 
-// polyfilling ecmascript
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
-
-import kickDrumWav from '../sounds/kick-drum.wav';
 import kickDrumMp3 from '../sounds/kick-drum.mp3';
-import snareDrumWav from '../sounds/snare-drum.wav';
 import snareDrumMp3 from '../sounds/snare-drum.mp3';
-import hiHatWav from '../sounds/hi-hat.wav';
 import hiHatMp3 from '../sounds/hi-hat.mp3';
-import tomTomWav from '../sounds/tom.wav';
 import tomTomMp3 from '../sounds/tom.mp3';
-import hallReverbWav from '../sounds/hall-reverb.wav';
 import hallReverbMp3 from '../sounds/hall-reverb.mp3';
-import longReverbWav from '../sounds/long-reverb.wav';
 import longReverbMp3 from '../sounds/long-reverb.mp3';
 
 let sounds = {
 	kick: [
-		kickDrumWav,
 		kickDrumMp3
 	],
 	snare: [
-		snareDrumWav,
 		snareDrumMp3
 	],
 	hihat: [
-		hiHatWav,
 		hiHatMp3
 	],
 	tom: [
-		tomTomWav,
 		tomTomMp3
 	]
 };
 
 let reverbs = {
 	hall: [
-		hallReverbWav,
 		hallReverbMp3
 	],
 	long: [
-		longReverbWav,
 		longReverbMp3
 	]
 };
@@ -108,10 +92,6 @@ const createAudioGraph = (audioBuffer) => {
 	bufferSource.connect(dryGain);
 
 	dryGain.connect(audioCtx.destination);
-	
-	
-	
-
 
 	bufferSource.start();
 };
@@ -139,6 +119,7 @@ const addButton = (sound) => {
 
 if (audioCtx) {
 	let audioType;
+
 	if (setAudioType() === 'probably') {
 		audioType = 0;
 	} else {
