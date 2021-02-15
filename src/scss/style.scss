@@ -1,15 +1,25 @@
 body {
 	background-color: lighten(lightgray, 10%);
 
+	label {
+		display: flex;
+		margin: 10px;
+	}
+
 	button {
 		cursor: pointer;
 	}
 	section {
 		&#reverb {
+			margin: 10px;
 			button {
 				font-size: 3rem;
 				border: 1px solid black;
 				border-radius: 5px;
+
+				&:hover {
+					background-color: lightgray;
+				}
 			}
 		}
 
