@@ -7,41 +7,23 @@ import tomTomMp3 from '../sounds/tom.mp3';
 import hallReverbMp3 from '../sounds/hall-reverb.mp3';
 import longReverbMp3 from '../sounds/long-reverb.mp3';
 
-let sounds = {
-	kick: [
-		kickDrumMp3
-	],
-	snare: [
-		snareDrumMp3
-	],
-	hihat: [
-		hiHatMp3
-	],
-	tom: [
-		tomTomMp3
-	]
-};
+let files = [
+	{type: 'sound', name: 'kick', src: kickDrumMp3},
+	{type: 'sound', name: 'snare', src: snareDrumMp3},
+	{type: 'sound', name: 'hi-hat', src: hiHatMp3},
+	{type: 'sound', name: 'tom', src: tomTomMp3},
+	{type: 'reverb', name: 'hall', src: hallReverbMp3},
+	{type: 'reverb', name: 'long', src: longReverbMp3}
+];
 
-let reverbs = {
-	hall: [
-		hallReverbMp3
-	],
-	long: [
-		longReverbMp3
-	]
-};
+let filesLoaded = 0;
 
-
-
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-let audioCtx = new AudioContext();
-
-
-function decodeSound(soundObject) {
+function decodeSounds() {
+	let file = files[filesLoaded];
 
 	let xhr = new XMLHttpRequest();
 
-	xhr.open('get', soundObject.file, true);
+	xhr.open('get', file.src, true);
 
 	xhr.responseType = 'arraybuffer';
 
@@ -49,7 +31,17 @@ function decodeSound(soundObject) {
 
 		audioCtx.decodeAudioData(xhr.response)
 			.then(buffer => {
-				addButton({name: soundObject.name, buffer, type: soundObject.type});
+				decodedSoundFiles.push({type: file.type, name: file.name, src: buffer});
+
+				filesLoaded++;
+
+				if (filesLoaded === files.length) {
+					createGainInputs();
+					return;
+				}
+
+				decodeSounds();
+
 			})
 			.catch(err => console.error(err));
 
@@ -57,10 +49,82 @@ function decodeSound(soundObject) {
 
 	xhr.send();
 
-
-
-	
 }
+
+let decodedSoundFiles = [];
+
+
+
+
+
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+
+let gainInputs = {
+	dry: null,
+	wet: null
+};
+
+const createGainInputs = () => {
+
+	let keys = Object.keys(gainInputs);
+
+	for (let key of keys) {
+		gainInputs[key] = document.createElement('input');
+		gainInputs[key].type = 'range';
+		gainInputs[key].min = '0';
+		gainInputs[key].max = '1.5';
+		gainInputs[key].value = '1';
+		gainInputs[key].step = '0.05';
+
+		let inputLabel = document.createElement('label');
+		inputLabel.textContent = key;
+
+		inputLabel.append(gainInputs[key]);
+
+		document.body.append(inputLabel);
+	}
+
+	createSections();
+};
+
+const createSections = () => {
+	let sections = ['reverb', 'sound'];
+
+	for (let section of sections) {
+		let element = document.createElement('section');
+
+		element.id = section;
+
+		document.body.append(element);
+	}
+
+
+	createButtons();
+};
+
+let currentReverb;
+
+const createButtons = () => {
+	decodedSoundFiles.forEach(buffer => {
+		let button = document.createElement('button');
+
+		button.innerHTML = buffer.name;
+
+		if (buffer.type === 'reverb') {
+			button.onclick = () => {
+				currentReverb = buffer.src;
+			};
+		} else {
+			button.onclick = () => {
+				createAudioGraph(buffer.src);
+			};
+		}
+
+		document.querySelector('section#' + buffer.type).append(button);
+	});
+
+};
 
 
 const createAudioGraph = (audioBuffer) => {
@@ -77,9 +141,7 @@ const createAudioGraph = (audioBuffer) => {
 
 	let wetGain = audioCtx.createGain();
 
-	let wetGainInput = document.querySelector('#wetGain');
-
-	wetGain.gain.value = wetGainInput.value;
+	wetGain.gain.value = gainInputs.wet.value;
 
 	bufferSource.connect(convolver);
 
@@ -92,9 +154,7 @@ const createAudioGraph = (audioBuffer) => {
 	// dry signal
 	let dryGain = audioCtx.createGain();
 
-	let dryGainInput = document.querySelector('#dryGain');
-
-	dryGain.gain.value = dryGainInput.value;
+	dryGain.gain.value = gainInputs.dry.value;
 
 	bufferSource.connect(dryGain);
 
@@ -103,51 +163,25 @@ const createAudioGraph = (audioBuffer) => {
 	bufferSource.start();
 };
 
+const init = () => {
+	startButton.remove();
 
+	audioCtx = new AudioContext();
 
-let currentReverb;
+	if (audioCtx) {
+		decodeSounds();
 
-const addButton = (sound) => {
-	let button = document.createElement('button');
-
-	button.innerHTML = sound.name;
-
-	if (sound.type === 'reverb') {
-		button.onclick = () => {
-			currentReverb = sound.buffer;
-		};
 	} else {
-		button.onclick = () => {
-
-			if (audioCtx.state === 'suspended') {
-				audioCtx.resume().then(() => {
-					createAudioGraph(sound.buffer);
-				});
-			} else {
-				createAudioGraph(sound.buffer);
-			}
-		};
+		console.log('web audio api not supported');
 	}
 
-	document.querySelector('section#' + sound.type).append(button);
 };
 
-if (audioCtx) {
+let startButton = document.createElement('button');
 
-	for (let i = 0; i < Object.keys(reverbs).length; i++) {
-		let key = Object.keys(reverbs)[i];
+startButton.innerHTML = 'Start';
 
-		decodeSound({name: key, file: reverbs[key], type: 'reverb'});
-	}
+startButton.onclick = init;
 
-	for (let i = 0; i < Object.keys(sounds).length; i++) {
-		let key = Object.keys(sounds)[i];
-
-		decodeSound({name: key, file: sounds[key], type: 'sound'});
-	}
-
-
-} else {
-	console.log('web audio api not supported');
-}
+document.body.append(startButton);
 
