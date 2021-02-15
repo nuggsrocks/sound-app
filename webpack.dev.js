@@ -9,11 +9,11 @@ module.exports = merge(commonConfig, {
 		rules: [
 			{
 				test: /\.css$/,
-				loader: ['style-loader', 'css-loader']
+				use: ['style-loader', 'css-loader']
 			},
 			{
 				test: /\.scss$/,
-				loader: ['style-loader', 'css-loader', 'sass-loader']
+				use: ['style-loader', 'css-loader', 'sass-loader']
 			},
 		]
 	}

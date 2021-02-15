@@ -37,13 +37,17 @@ let reverbs = {
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx = new AudioContext();
 
+
 function decodeSound(soundObject) {
 
 	axios.get(soundObject.file, {responseType: 'arraybuffer'})
 		.then(result => {
-			audioCtx.decodeAudioData(result.data, buffer => {
-				addButton({name: soundObject.name, buffer, type: soundObject.type});
-			}, err => console.error(err));
+
+			audioCtx.decodeAudioData(result.data)
+				.then(buffer => {
+					addButton({name: soundObject.name, buffer, type: soundObject.type});
+				})
+				.catch(err => console.error(err));
 		})
 		.catch(e => console.error(e));
 
@@ -52,6 +56,7 @@ function decodeSound(soundObject) {
 
 
 const createAudioGraph = (audioBuffer) => {
+
 	let bufferSource = audioCtx.createBufferSource();
 
 	bufferSource.buffer = audioBuffer;
@@ -73,8 +78,8 @@ const createAudioGraph = (audioBuffer) => {
 	convolver.connect(wetGain);
 
 	wetGain.connect(audioCtx.destination);
-	
-	
+
+
 
 	// dry signal
 	let dryGain = audioCtx.createGain();
@@ -104,7 +109,14 @@ const addButton = (sound) => {
 		};
 	} else {
 		button.onclick = () => {
-			createAudioGraph(sound.buffer);
+
+			if (audioCtx.state === 'suspended') {
+				audioCtx.resume().then(() => {
+					createAudioGraph(sound.buffer);
+				});
+			} else {
+				createAudioGraph(sound.buffer);
+			}
 		};
 	}
 
