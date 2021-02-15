@@ -1,5 +1,4 @@
 import '../scss/style.scss';
-import axios from 'axios';
 
 import kickDrumMp3 from '../sounds/kick-drum.mp3';
 import snareDrumMp3 from '../sounds/snare-drum.mp3';
@@ -40,16 +39,25 @@ let audioCtx = new AudioContext();
 
 function decodeSound(soundObject) {
 
-	axios.get(soundObject.file, {responseType: 'arraybuffer'})
-		.then(result => {
+	let xhr = new XMLHttpRequest();
 
-			audioCtx.decodeAudioData(result.data)
-				.then(buffer => {
-					addButton({name: soundObject.name, buffer, type: soundObject.type});
-				})
-				.catch(err => console.error(err));
-		})
-		.catch(e => console.error(e));
+	xhr.open('get', soundObject.file, true);
+
+	xhr.responseType = 'arraybuffer';
+
+	xhr.onload = () => {
+
+		audioCtx.decodeAudioData(xhr.response)
+			.then(buffer => {
+				addButton({name: soundObject.name, buffer, type: soundObject.type});
+			})
+			.catch(err => console.error(err));
+
+	};
+
+	xhr.send();
+
+
 
 	
 }
@@ -102,8 +110,9 @@ let currentReverb;
 const addButton = (sound) => {
 	let button = document.createElement('button');
 
+	button.innerHTML = sound.name;
+
 	if (sound.type === 'reverb') {
-		button.innerHTML = sound.name;
 		button.onclick = () => {
 			currentReverb = sound.buffer;
 		};
