@@ -1,3 +1,6 @@
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
+
 import '../scss/style.scss';
 
 import kickDrumMp3 from '../sounds/kick-drum.mp3';
@@ -7,7 +10,7 @@ import tomTomMp3 from '../sounds/tom.mp3';
 import hallReverbMp3 from '../sounds/hall-reverb.mp3';
 import longReverbMp3 from '../sounds/long-reverb.mp3';
 
-let files = [
+let samples = [
 	{type: 'sound', name: 'kick', src: kickDrumMp3},
 	{type: 'sound', name: 'snare', src: snareDrumMp3},
 	{type: 'sound', name: 'hi-hat', src: hiHatMp3},
@@ -15,47 +18,6 @@ let files = [
 	{type: 'reverb', name: 'hall', src: hallReverbMp3},
 	{type: 'reverb', name: 'long', src: longReverbMp3}
 ];
-
-let filesLoaded = 0;
-
-function decodeSounds() {
-	let file = files[filesLoaded];
-
-	let xhr = new XMLHttpRequest();
-
-	xhr.open('get', file.src, true);
-
-	xhr.responseType = 'arraybuffer';
-
-	xhr.onload = () => {
-
-		audioCtx.decodeAudioData(xhr.response)
-			.then(buffer => {
-				decodedSoundFiles.push({type: file.type, name: file.name, src: buffer});
-
-				filesLoaded++;
-
-				if (filesLoaded === files.length) {
-					createGainInputs();
-					return;
-				}
-
-				decodeSounds();
-
-			})
-			.catch(err => console.error(err));
-
-	};
-
-	xhr.send();
-
-}
-
-let decodedSoundFiles = [];
-
-
-
-
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
@@ -163,13 +125,26 @@ const createAudioGraph = (audioBuffer) => {
 	bufferSource.start();
 };
 
+
+import {fetchArrayBuffers} from './fetchArrayBuffers';
+import {decodeSampleBuffers} from './decodeSampleBuffers';
+
 const init = () => {
 	startButton.remove();
 
 	audioCtx = new AudioContext();
 
 	if (audioCtx) {
-		decodeSounds();
+
+		fetchArrayBuffers(samples).then(() => {
+
+			decodeSampleBuffers(audioCtx, samples).then(() => {
+
+
+			});
+		});
+
+
 
 	} else {
 		console.log('web audio api not supported');
