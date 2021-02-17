@@ -25,7 +25,6 @@ module.exports = {
 		},
 	plugins: [
 		new HtmlWebpackPlugin({
-			template: './src/html/index.html',
 			filename: 'index.html',
 			meta: {
 				charset: 'utf-8',
