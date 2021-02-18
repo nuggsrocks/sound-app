@@ -25,16 +25,13 @@ export const constructWetGain = (audioCtx, gain) => {
 
 export const constructWetSignal = (audioCtx, {bufferSource, gain, convolver}) => {
 
-	if (bufferSource !== undefined && gain !== undefined) {
+	if (bufferSource !== undefined && gain !== undefined && convolver !== undefined) {
 
-		if (convolver !== undefined) {
+		bufferSource.connect(convolver);
 
-			bufferSource.connect(convolver);
+		convolver.connect(gain);
 
-			convolver.connect(gain);
-
-			gain.connect(audioCtx.destination);
-		}
+		gain.connect(audioCtx.destination);
 	}
 };
 

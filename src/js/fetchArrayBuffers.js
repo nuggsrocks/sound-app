@@ -6,6 +6,7 @@ export const fetchArrayBuffers = async (samples) => {
 		while (i < samples.length) {
 			samples[i].buffer = await new Promise((resolve, reject) => {
 				let soundFile = samples[i].src;
+
 				let xhr = new XMLHttpRequest();
 
 				xhr.open('get', soundFile, true);
@@ -13,7 +14,12 @@ export const fetchArrayBuffers = async (samples) => {
 				xhr.responseType = 'arraybuffer';
 
 				xhr.onload = () => {
-					resolve(xhr.response);
+					if (soundFile === undefined) {
+						resolve(undefined);
+					} else {
+						resolve(xhr.response);
+					}
+
 				};
 
 				xhr.onerror = () => {

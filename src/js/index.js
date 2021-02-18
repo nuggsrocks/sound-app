@@ -16,7 +16,8 @@ let samples = [
 	{type: 'sound', name: 'hi-hat', src: hiHatMp3},
 	{type: 'sound', name: 'tom', src: tomTomMp3},
 	{type: 'reverb', name: 'hall', src: hallReverbMp3},
-	{type: 'reverb', name: 'long', src: longReverbMp3}
+	{type: 'reverb', name: 'long', src: longReverbMp3},
+	{type: 'reverb', name: 'none', src: undefined}
 ];
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -29,7 +30,6 @@ import {decodeSampleBuffers} from './decodeSampleBuffers';
 import {createGainInputs} from './createGainInputs';
 import {createSections} from './createSections';
 import {createButtons} from './createButtons';
-import {addEventListeners} from './addEventListeners';
 import {
 	constructAudioGraph
 } from './constructAudioGraph';
@@ -52,8 +52,6 @@ const init = () => {
 				state.gainInputs = createGainInputs();
 				createSections();
 				createButtons(samples);
-
-
 
 
 				for (let i = 0; i < samples.length; i++) {
