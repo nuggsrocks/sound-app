@@ -30,10 +30,14 @@ import {createGainInputs} from './createGainInputs';
 import {createSections} from './createSections';
 import {createButtons} from './createButtons';
 import {addEventListeners} from './addEventListeners';
-import {createConvolverNode, constructWetGain, makeBufferSource, constructWetSignal, constructDrySignal} from './constructAudioGraph';
+import {
+	constructAudioGraph
+} from './constructAudioGraph';
 
-let gainInputs;
-let currentReverb;
+let state = {
+	gainInputs: undefined,
+	currentReverb: undefined
+}
 
 const init = () => {
 	startButton.remove();
@@ -45,26 +49,27 @@ const init = () => {
 		fetchArrayBuffers(samples).then(() => {
 
 			decodeSampleBuffers(audioCtx, samples).then(() => {
-				gainInputs = createGainInputs();
+				state.gainInputs = createGainInputs();
 				createSections();
 				createButtons(samples);
 
+
+
+
 				for (let i = 0; i < samples.length; i++) {
 					samples[i].button.onclick = () => {
-						let bufferSource = makeBufferSource(audioCtx, samples[i].buffer);
-
-						let convolver = createConvolverNode(audioCtx, currentReverb);
-
-						let wetGain = constructWetGain(audioCtx, gainInputs.wet);
-
-						constructWetSignal(audioCtx, {bufferSource, convolver, wetGain});
-
-						constructDrySignal(audioCtx, {gain: gainInputs.dry, bufferSource});
-
-						bufferSource.start();
-
+						if (samples[i].type === 'sound') {
+							constructAudioGraph(audioCtx, {
+								buffer: samples[i].buffer,
+								reverb: state.currentReverb,
+								gainInputs: state.gainInputs
+							});
+						} else {
+							state.currentReverb = samples[i].buffer;
+						}
 					};
 				}
+
 			});
 		});
 
@@ -75,6 +80,8 @@ const init = () => {
 	}
 
 };
+
+document.body.onclick = () => console.log(state);
 
 let startButton = document.createElement('button');
 

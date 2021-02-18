@@ -1,21 +1,13 @@
-import {makeBufferSource, createConvolverNode} from './constructAudioGraph';
+import {
+	constructAudioGraph
+} from './constructAudioGraph';
 
-export const addEventListeners = (samples) => {
-	samples.forEach(sample => {
-		let onClick;
+export const addEventListeners = (audioCtx, {samples, state}) => {
 
-		if (sample.type === 'sound') {
-			onClick = () => {
-				let bufferSource = makeBufferSource();
-
-				let convolver = createConvolverNode();
-
-
-			};
-		} else {
-			onClick = () => {};
+	if (samples !== undefined &&  state !== undefined) {
+		for (let i = 0; i < samples.length; i++) {
+			samples[i].button.onclick = () => onButtonClick(samples[i], state);
 		}
+	}
 
-		sample.button.onclick = onClick;
-	});
 };

@@ -23,28 +23,45 @@ export const constructWetGain = (audioCtx, gain) => {
 	return wetGain;
 };
 
-export const constructWetSignal = (audioCtx, options) => {
+export const constructWetSignal = (audioCtx, {bufferSource, gain, convolver}) => {
 
-	if (options.bufferSource !== undefined && options.gain !== undefined) {
+	if (bufferSource !== undefined && gain !== undefined) {
 
-		if (options.convolver !== undefined) {
-			options.bufferSource.connect(options.convolver);
+		if (convolver !== undefined) {
 
-			options.convolver.connect(options.gain);
+			bufferSource.connect(convolver);
 
-			options.gain.connect(audioCtx.destination);
+			convolver.connect(gain);
+
+			gain.connect(audioCtx.destination);
 		}
 	}
 };
 
-export const constructDrySignal = (audioCtx, options) => {
-	if (options.bufferSource !== undefined && options.gain !== undefined) {
+
+export const constructDrySignal = (audioCtx, {bufferSource, gain}) => {
+	if (bufferSource !== undefined && gain !== undefined) {
 		let dryGain = audioCtx.createGain();
 
-		dryGain.gain.value = options.gain.value;
+		dryGain.gain.value = gain.value;
 
-		options.bufferSource.connect(dryGain);
+		bufferSource.connect(dryGain);
 
 		dryGain.connect(audioCtx.destination);
 	}
+};
+
+export const constructAudioGraph = (audioCtx, {buffer, reverb, gainInputs}) => {
+
+	let bufferSource = makeBufferSource(audioCtx, buffer);
+
+	let convolver = createConvolverNode(audioCtx, reverb);
+
+	let wetGain = constructWetGain(audioCtx, gainInputs.wet);
+
+	constructWetSignal(audioCtx, {bufferSource, gain: wetGain, convolver});
+
+	constructDrySignal(audioCtx, {gain: gainInputs.dry, bufferSource});
+
+	bufferSource.start();
 };
