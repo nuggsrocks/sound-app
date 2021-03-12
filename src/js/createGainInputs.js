@@ -1,5 +1,8 @@
 export const createGainInputs = () => {
 
+	let inputDiv = document.createElement('div');
+
+
 	let gainInputs = {
 		dry: null,
 		wet: null
@@ -18,8 +21,12 @@ export const createGainInputs = () => {
 
 		inputLabel.append(gainInputs[key]);
 
-		document.body.append(inputLabel);
+
+
+		inputDiv.append(inputLabel);
 	}
+
+	document.body.append(inputDiv);
 
 	return gainInputs;
 };
