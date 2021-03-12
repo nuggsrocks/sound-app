@@ -1,5 +1,5 @@
 export const createSections = () => {
-	let sections = ['reverb', 'sound'];
+	let sections = ['reverbs', 'sounds'];
 
 	for (let section of sections) {
 		let element = document.createElement('section');

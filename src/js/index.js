@@ -10,15 +10,19 @@ import tomTomMp3 from '../sounds/tom.mp3';
 import hallReverbMp3 from '../sounds/hall-reverb.mp3';
 import longReverbMp3 from '../sounds/long-reverb.mp3';
 
-let samples = [
-	{type: 'sound', name: 'kick', src: kickDrumMp3},
-	{type: 'sound', name: 'snare', src: snareDrumMp3},
-	{type: 'sound', name: 'hi-hat', src: hiHatMp3},
-	{type: 'sound', name: 'tom', src: tomTomMp3},
-	{type: 'reverb', name: 'hall', src: hallReverbMp3},
-	{type: 'reverb', name: 'long', src: longReverbMp3},
-	{type: 'reverb', name: 'none', src: undefined}
-];
+
+let samples = {
+	sounds: [
+		{name: 'kick', src: kickDrumMp3},
+		{name: 'snare', src: snareDrumMp3},
+		{name: 'hi-hat', src: hiHatMp3},
+		{name: 'tom', src: tomTomMp3}
+	],
+	reverbs: [
+		{name: 'hall', src: hallReverbMp3},
+		{name: 'long', src: longReverbMp3}
+	]
+};
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
@@ -52,20 +56,21 @@ const init = () => {
 				createButtons(samples);
 
 
-				for (let i = 0; i < samples.length; i++) {
-					samples[i].button.onclick = () => {
-						if (samples[i].type === 'sound') {
-							constructAudioGraph(audioCtx, {
-								buffer: samples[i].buffer,
-								reverb: state.currentReverb,
-								gainInputs: state.gainInputs
-							});
-						} else {
-							state.currentReverb = samples[i].buffer;
-
-						}
-					};
-				}
+				Object.keys(samples).forEach(key => {
+					samples[key].forEach(sample => {
+						sample.button.onclick = () => {
+							if (key === 'sounds') {
+								constructAudioGraph(audioCtx, {
+									buffer: sample.buffer,
+									reverb: state.currentReverb,
+									gainInputs: state.gainInputs
+								});
+							} else {
+								state.currentReverb = sample.buffer;
+							}
+						};
+					})
+				})
 
 			});
 		});
@@ -77,8 +82,6 @@ const init = () => {
 	}
 
 };
-
-document.body.onclick = () => console.log(state);
 
 let startButton = document.createElement('button');
 
