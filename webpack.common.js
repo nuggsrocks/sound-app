@@ -26,6 +26,7 @@ module.exports = {
 	plugins: [
 		new HtmlWebpackPlugin({
 			filename: 'index.html',
+			title: 'Sound Machine',
 			meta: {
 				charset: 'utf-8',
 				viewport: 'width=device-width,initial-scale=1.0'
