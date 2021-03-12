@@ -30,9 +30,7 @@ import {decodeSampleBuffers} from './decodeSampleBuffers';
 import {createGainInputs} from './createGainInputs';
 import {createSections} from './createSections';
 import {createButtons} from './createButtons';
-import {
-	constructAudioGraph
-} from './constructAudioGraph';
+import {constructAudioGraph} from './constructAudioGraph';
 
 let state = {
 	gainInputs: undefined,
