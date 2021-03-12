@@ -11,7 +11,7 @@ export const createGainInputs = () => {
 		gainInputs[key].min = '0';
 		gainInputs[key].max = '1.5';
 		gainInputs[key].value = '1';
-		gainInputs[key].step = '0.05';
+		gainInputs[key].step = '0.01';
 
 		let inputLabel = document.createElement('label');
 		inputLabel.textContent = key;
